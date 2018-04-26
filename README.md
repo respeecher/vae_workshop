@@ -1,21 +1,20 @@
 # beta-VAE on spectrograms
-Code to replicate results from the VAE workshop by Respeecher at ODSC 2018 Kyiv. The code is pretty messed up at places, but probably can be helpful for educational purposes.
+Code to replicate results from the VAE workshop held by Dmytro Bielievtsv and Grant Reaber from Respeecher at ODSC Conference 2018, Kyiv. The code might be pretty messed up, but hopefully can be helpful for educational purposes.
 
 # Requirements
 * tensorflow >= 1.5
 * tflearn (I'm sorry)
 * librosa
 * scipy
-* pysoundfile
 
 # Usage
 ## 1) Feature extraction
-Prepare a set of audio files on some folder (say, `audio`) and split it into two subfolders train and test. They might be in either `.wav` or `.ogg` format. Extract features as using `extract_features.py`:
+Prepare a set of audio files in some folder (say, `audio/`) and split it into two subfolders `audio/train` and `audio/test`. The files can be in either `.wav` or `.ogg` format. Extract features as using `extract_features.py`:
 ```bash
 $ cd vae_workshop
 $ python extract_features.py ../audio/ ../audio_feat/
 ```
-The script will extract both mel and linear log-magnitude spectrograms and store them as `.npz` files in `audio_feat`. See `python extract_features.py -h` for more details.
+The command above will extract both compressed mel and full linear log-magnitude spectrograms and store them as `.npz` files in `audio_feat/`. See `python extract_features.py -h` for more details.
 
 ## 2) Train the VAE
 Run the VAE training script:
@@ -28,7 +27,7 @@ $ tensorboard --logdir checkpoints/
 ```
 
 ## 3) Train the mel spectrogram inverter
-Mel-spectrogram is usually about 100 frames per second and 80 dimensions per frame. This is a very compressed representation, so to get nicely sounding waveforms, one can use a separate neural network (a CBHG block, as in Wang, Yuxuan et al. "Tacotron: Towards End-to-End Speech Synthesis.", 2017) to convert from e.g. an 80-dim melspec representation to a 513-dim power spectrum, which can then be inverter using the Griffin-Lim approximation (Daniel Griffin and Jae Lim. Signal estimation from modified short-time Fourier transform, 1984).
+Mel-spectrogram is usually about 100 frames per second at 80 dimensions per frame. This is a very compressed representation, so to get nicely sounding waveforms one can use a separately trained neural network (a CBHG block, as in Wang, Yuxuan et al. "Tacotron: Towards End-to-End Speech Synthesis.", 2017) to convert from e.g. an 80-dim melspec representation to a 513-dim power spectrum, which can then be converted back to the waveform using the Griffin-Lim approximation (Daniel Griffin and Jae Lim. Signal estimation from modified short-time Fourier transform, 1984).
 
 Run the training script:
 ```bash
