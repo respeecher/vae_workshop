@@ -8,9 +8,8 @@ def make_encoder(segment, batch_size, num_latents, encoder_units):
         encoder_cell = rnn.BasicLSTMCell(encoder_units, name="encoder_cell")
         initial_state = encoder_cell.zero_state(batch_size, tf.float32)
 
-        input_attenuation = 100.  # empirical magic number
         encoder_outputs, final_state = tf.nn.dynamic_rnn(
-                encoder_cell, segment / input_attenuation,
+                encoder_cell, segment,
                 initial_state=initial_state)
         q_params = final_state.h
 
@@ -62,6 +61,9 @@ def create_vae_with_elbo_loss(
         encoder_units, decoder_units, num_latents,
         beta):
 
+    input_attenuation = 100.  # empirical magic number
+    segment = segment / input_attenuation
+
     batch_size, segment_length, _ = tf.unstack(tf.shape(segment))
 
     q, outs = make_encoder(segment, batch_size, num_latents, encoder_units)
@@ -83,8 +85,8 @@ def create_vae_with_elbo_loss(
     outputs = {'z_prior': r.sample(batch_size),
                'z_posterior_sample': z,
                'z_posterior_mean': q.mean(),
-               'x_reconst_sample': p.sample(),
-               'x_reconst_mean': p.mean(),
+               'x_reconst_sample': p.sample() * input_attenuation,
+               'x_reconst_mean': p.mean() * input_attenuation,
                'encoder_outs': outs}
 
     return total_loss, outputs
