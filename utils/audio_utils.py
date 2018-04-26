@@ -1,7 +1,6 @@
 import numpy as np
 import librosa
 from scipy import signal
-import soundfile as sf
 import fnmatch
 import os
 
@@ -46,8 +45,3 @@ def log_magnitude_postproc(stftm, magnitude_enphasis):
     # Undo log and square
     stftm = np.sqrt(np.exp(stftm))
     return stftm
-
-
-def write_wav(path, y, *args, **kwargs):
-    y /= np.max(np.abs(y))
-    sf.write(path, y, *args, **kwargs)

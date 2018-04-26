@@ -81,6 +81,7 @@ load(saver, sess, args.logdir)
 summary_writer = tf.summary.FileWriter(args.logdir, sess.graph)
 
 test_loss_ = np.inf
+train_loss_ = np.inf
 for epoch in range(num_epochs):
     # Initialize an iterator over the training dataset.
     sess.run(training_init_op)
